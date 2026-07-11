@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian AI — Ask your documents</title>
+  <meta name="description" content="Upload a document and ask questions about it. Grounded, cited answers powered by Meridian AI.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       1. TOP NAVIGATION
+  ============================================================= -->
+  <header id="top-nav" class="top-nav">
+    <nav class="top-nav__inner" aria-label="Primary">
+      <div class="top-nav__brand">
+        <span id="brand-title" class="brand-title">Meridian AI</span>
+        <span id="brand-tagline" class="brand-tagline">Ask your documents, get grounded answers</span>
+      </div>
+
+      <div class="top-nav__actions">
+        <a
+          id="github-button"
+          class="nav-button nav-button--icon"
+          href="https://github.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View source on GitHub"
+        >
+          GitHub
+        </a>
+        <button
+          id="about-button"
+          type="button"
+          class="nav-button"
+          aria-haspopup="dialog"
+        >
+          About
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="main-content">
+
+    <!-- ============================================================
+         2. UPLOAD HERO
+    ============================================================= -->
+    <section id="upload-hero" class="upload-hero" aria-labelledby="upload-hero-heading">
+      <h1 id="upload-hero-heading" class="upload-hero__heading">
+        Ask questions about any document
+      </h1>
+      <p id="upload-hero-subtitle" class="upload-hero__subtitle">
+        Upload a PDF, DOCX, or TXT document and get grounded, cited answers in seconds.
+      </p>
+
+      <form id="upload-form" class="upload-form" aria-describedby="upload-supported-formats">
+        <div
+          id="upload-dropzone"
+          class="upload-dropzone"
+          role="button"
+          tabindex="0"
+          aria-describedby="upload-dropzone-instructions"
+        >
+          <p id="upload-dropzone-instructions" class="upload-dropzone__instructions">
+            Drag and drop your file here
+          </p>
+          <p class="upload-dropzone__or">or</p>
+
+          <label for="upload-file-input" class="visually-hidden">Choose a file to upload</label>
+          <button
+            id="browse-files-button"
+            type="button"
+            class="browse-button"
+          >
+            Browse files
+          </button>
+          <input
+            id="upload-file-input"
+            class="upload-file-input visually-hidden"
+            type="file"
+            name="document"
+            accept=".pdf,.docx,.txt"
+          >
+        </div>
+
+        <p id="upload-supported-formats" class="upload-supported-formats">
+          Supported formats: PDF, DOCX, TXT &middot; Maximum size 10MB
+        </p>
+      </form>
+    </section>
+
+    <!-- ============================================================
+         3. HIDDEN DOCUMENT BAR
+         Hidden by default; revealed after a successful upload.
+    ============================================================= -->
+    <section
+      id="document-bar"
+      class="document-bar"
+      aria-label="Current document"
+      hidden
+    >
+      <div class="document-bar__info">
+        <span id="document-bar-icon" class="document-bar__icon" aria-hidden="true"></span>
+        <span id="document-bar-filename" class="document-bar__filename">filename.pdf</span>
+        <span id="document-bar-status" class="document-bar__status">
+          <span class="status-dot status-dot--ready" aria-hidden="true"></span>
+          <span id="document-bar-status-label">Ready</span>
+        </span>
+      </div>
+
+      <div class="document-bar__actions">
+        <button id="replace-document-button" type="button" class="document-bar__action">
+          Replace document
+        </button>
+        <button id="new-chat-button" type="button" class="document-bar__action">
+          New chat
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4. EMPTY CHAT STATE
+         Shown when a document is ready but no messages exist yet.
+    ============================================================= -->
+    <section
+      id="empty-chat-state"
+      class="empty-chat-state"
+      aria-labelledby="empty-chat-state-heading"
+      hidden
+    >
+      <p id="empty-chat-state-heading" class="empty-chat-state__message">
+        Ask anything about this document
+      </p>
+
+      <div
+        id="suggested-questions"
+        class="suggested-questions"
+        role="group"
+        aria-label="Suggested questions"
+      >
+        <button type="button" class="suggested-question-button" data-suggested-question="true">
+          What is this document about?
+        </button>
+        <button type="button" class="suggested-question-button" data-suggested-question="true">
+          Summarize the key points
+        </button>
+        <button type="button" class="suggested-question-button" data-suggested-question="true">
+          What are the main conclusions?
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         5. CONVERSATION CONTAINER
+         Populated dynamically as the user asks questions.
+    ============================================================= -->
+    <section
+      id="conversation-container"
+      class="conversation-container"
+      aria-label="Conversation"
+      aria-live="polite"
+    >
+      <!-- Message elements are inserted here at runtime. -->
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       6. STICKY BOTTOM INPUT
+  ============================================================= -->
+  <section id="question-input-bar" class="question-input-bar" aria-label="Ask a question">
+    <form id="question-form" class="question-form">
+      <label for="question-input" class="visually-hidden">Ask a question about this document</label>
+      <textarea
+        id="question-input"
+        class="question-input"
+        name="question"
+        rows="1"
+        placeholder="Ask a question about this document..."
+        aria-describedby="question-input-hint"
+        disabled
+      ></textarea>
+      <span id="question-input-hint" class="visually-hidden">Press Enter to send your question</span>
+
+      <button
+        id="send-question-button"
+        type="submit"
+        class="send-button"
+        disabled
+      >
+        <span class="visually-hidden">Send question</span>
+        <span id="send-button-icon" class="send-button__icon" aria-hidden="true"></span>
+      </button>
+    </form>
+  </section>
+
+  <!-- ============================================================
+       7. FOOTER
+  ============================================================= -->
+  <footer id="site-footer" class="site-footer">
+    <p class="site-footer__text">
+      Intelligent document conversations, powered by Meridian AI.
+      <a id="footer-github-link" href="https://github.com/" target="_blank" rel="noopener noreferrer">
+        View on GitHub
+      </a>
+    </p>
+  </footer>
+<script src="js/app.js"></script>
+</body>
+</html>

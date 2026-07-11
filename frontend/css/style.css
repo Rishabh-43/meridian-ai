@@ -1,0 +1,1349 @@
+/* ================================================================
+   Meridian AI — Foundational Stylesheet (Phase 2)
+
+   Scope: design tokens, reset, base typography, layout shell,
+   top navigation, upload hero, upload dropzone, buttons, footer,
+   and responsive breakpoints.
+
+   Explicitly OUT OF SCOPE for this file (left for a later phase):
+   chat messages / AI response cards, suggested-question buttons,
+   the document bar, the sticky chat input bar, and any loading
+   animations. Their selectors exist in index.html but are not
+   styled here.
+================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+/* ----------------------------------------------------------------
+   1. Design Tokens
+---------------------------------------------------------------- */
+
+:root {
+  /* Color — surfaces */
+  --color-bg-page: #FAFBFC;
+  --color-bg-surface: #FFFFFF;
+  --color-border-subtle: #E5E9F0;
+  --color-border-strong: #D8DEE9;
+
+  /* Color — text */
+  --color-text-primary: #1A1D23;
+  --color-text-secondary: #6B7280;
+  --color-text-placeholder: #9CA3AF;
+  --color-text-on-accent: #FFFFFF;
+
+  /* Color — accent */
+  --color-accent: #2563EB;
+  --color-accent-hover: #1D4ED8;
+  --color-accent-active: #1E40AF;
+  --color-accent-tint: #EFF4FF;
+  --color-accent-tint-border: #DCE6FB;
+
+  /* Color — feedback (reserved for later phases, defined now for consistency) */
+  --color-success: #16A34A;
+  --color-error: #DC2626;
+  --color-warning: #D97706;
+
+  /* Typography */
+  --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --font-size-xs: 0.8125rem;   /* 13px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md: 1rem;        /* 16px */
+  --font-size-lg: 1.25rem;     /* 20px */
+  --font-size-xl: 1.75rem;     /* 28px */
+  --font-size-2xl: 2rem;       /* 32px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --line-height-tight: 1.3;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Spacing (4px base grid) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-7: 3rem;     /* 48px */
+  --space-8: 4rem;     /* 64px */
+
+  /* Layout */
+  --content-max-width: 720px;
+  --page-max-width: 1120px;
+  --gutter: var(--space-4);
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 999px;
+
+  /* Shadow — used sparingly; no glassmorphism, no heavy elevation */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 2px 8px rgba(16, 24, 40, 0.08);
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --easing-standard: ease;
+
+  /* Focus ring */
+  --focus-ring-color: var(--color-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+
+/* ----------------------------------------------------------------
+   2. CSS Reset
+---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ----------------------------------------------------------------
+   3. Base Typography
+---------------------------------------------------------------- */
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+p {
+  line-height: var(--line-height-base);
+}
+
+
+/* ----------------------------------------------------------------
+   4. Body Styling / Layout Containers
+---------------------------------------------------------------- */
+
+body {
+  background-color: var(--color-bg-page);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared content column — matches the ~720px chat-app reading width
+   from the approved spec. Applied directly to the two sections this
+   phase is responsible for laying out. */
+#upload-hero,
+#conversation-container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+
+/* ----------------------------------------------------------------
+   5. Navigation Styling
+---------------------------------------------------------------- */
+
+.top-nav {
+  width: 100%;
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.top-nav__inner {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin-inline: auto;
+  padding: var(--space-4) var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.top-nav__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.brand-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.brand-tagline {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+
+/* ----------------------------------------------------------------
+   6. Upload Hero Styling
+---------------------------------------------------------------- */
+
+#upload-hero {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-hero__heading {
+  font-size: var(--font-size-2xl);
+  max-width: 32ch;
+}
+
+.upload-hero__subtitle {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  max-width: 46ch;
+}
+
+.upload-form {
+  width: 100%;
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.upload-supported-formats {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+
+/* ----------------------------------------------------------------
+   7. Upload Dropzone
+---------------------------------------------------------------- */
+
+.upload-dropzone {
+  width: 100%;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background-color: var(--color-bg-surface);
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--duration-base) var(--easing-standard),
+    background-color var(--duration-base) var(--easing-standard);
+}
+
+.upload-dropzone:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-tint);
+}
+
+.upload-dropzone__instructions {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.upload-dropzone__or {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-placeholder);
+}
+
+
+/* ----------------------------------------------------------------
+   8. Buttons
+---------------------------------------------------------------- */
+
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding-inline: var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  background-color: transparent;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+}
+
+.nav-button:hover {
+  background-color: var(--color-bg-page);
+  border-color: var(--color-border-strong);
+}
+
+.browse-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: var(--space-5);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-on-accent);
+  background-color: var(--color-accent);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+.browse-button:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.browse-button:active {
+  background-color: var(--color-accent-active);
+}
+
+
+/* ----------------------------------------------------------------
+   9. Footer
+---------------------------------------------------------------- */
+
+.site-footer {
+  width: 100%;
+  border-top: 1px solid var(--color-border-subtle);
+  padding: var(--space-5) var(--gutter);
+  text-align: center;
+}
+
+.site-footer__text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.site-footer__text a {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-medium);
+}
+
+.site-footer__text a:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+
+/* ----------------------------------------------------------------
+   Utilities
+---------------------------------------------------------------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ----------------------------------------------------------------
+   Focus-visible (applies globally to interactive elements styled
+   in this phase; components from later phases should follow the
+   same pattern using the tokens above)
+---------------------------------------------------------------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+
+/* ----------------------------------------------------------------
+   10. Responsive Breakpoints
+---------------------------------------------------------------- */
+
+/* Tablet and below */
+@media (max-width: 768px) {
+  .brand-tagline {
+    display: none;
+  }
+
+  #upload-hero {
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .upload-hero__heading {
+    font-size: var(--font-size-xl);
+  }
+
+  .upload-dropzone {
+    min-height: 200px;
+    padding: var(--space-5);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .top-nav__inner {
+    padding: var(--space-3) var(--space-3);
+  }
+
+  #upload-hero,
+  #conversation-container {
+    padding-inline: var(--space-3);
+  }
+
+  .upload-hero__heading {
+    font-size: var(--font-size-lg);
+  }
+
+  .upload-hero__subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  .upload-dropzone {
+    min-height: 180px;
+    padding: var(--space-4);
+  }
+
+  .nav-button {
+    padding-inline: var(--space-3);
+  }
+}
+
+
+/* ================================================================
+   PHASE 2B — Document Bar, Empty Chat State, Conversation & Messages
+
+   Scope: document bar, empty chat state, suggested-question chips,
+   conversation container spacing/scroll, user + assistant message
+   bubbles, retrieved-context disclosure, and prose typography
+   inside answers.
+
+   Explicitly OUT OF SCOPE (left for Phase 2C): the sticky bottom
+   input bar, the textarea, the send button, and any loading /
+   "thinking" / processing-state animations.
+================================================================= */
+
+
+/* ----------------------------------------------------------------
+   Document Bar
+---------------------------------------------------------------- */
+
+#document-bar {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding: var(--space-3) var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.document-bar__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.document-bar__icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-accent-tint);
+}
+
+.document-bar__filename {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.document-bar__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-placeholder);
+}
+
+.status-dot--ready {
+  background-color: var(--color-success);
+}
+
+.document-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.document-bar__action {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard);
+}
+
+.document-bar__action:hover {
+  color: var(--color-accent);
+  background-color: var(--color-accent-tint);
+}
+
+
+/* ----------------------------------------------------------------
+   Empty Chat State
+---------------------------------------------------------------- */
+
+#empty-chat-state {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding: var(--space-7) var(--gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-5);
+}
+
+.empty-chat-state__message {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+
+/* ----------------------------------------------------------------
+   Suggested Question Chips
+---------------------------------------------------------------- */
+
+.suggested-questions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.suggested-question-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-tint);
+  border: 1px solid var(--color-accent-tint-border);
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+}
+
+.suggested-question-button:hover {
+  background-color: var(--color-accent-tint-border);
+  border-color: var(--color-accent);
+}
+
+
+/* ----------------------------------------------------------------
+   Conversation Container
+---------------------------------------------------------------- */
+
+#conversation-container {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/*
+  Scroll behavior: the conversation container is a normal block in
+  page flow (the page itself scrolls), not an internally-scrolling
+  panel. This is a deliberate choice for this phase, since pairing
+  an internal scroll region with a pinned input bar is Phase 2C's
+  responsibility (the sticky input bar). Revisit here if 2C's
+  layout needs the container to become its own scroll region.
+*/
+
+
+/* ----------------------------------------------------------------
+   Message Bubbles (user + assistant)
+
+   Class names below are not yet present in index.html — Phase 3
+   (JavaScript) will append message elements to #conversation-container
+   at runtime and should use this structure:
+
+     <div class="conversation-message conversation-message--user">
+       <div class="conversation-message__bubble">...</div>
+     </div>
+
+     <div class="conversation-message conversation-message--assistant">
+       <div class="conversation-message__bubble">
+         <div class="conversation-message__text">...answer prose...</div>
+         <div class="context-disclosure"> ... </div>
+       </div>
+     </div>
+---------------------------------------------------------------- */
+
+.conversation-message {
+  display: flex;
+  width: 100%;
+}
+
+.conversation-message--user {
+  justify-content: flex-end;
+}
+
+.conversation-message--assistant {
+  justify-content: flex-start;
+}
+
+.conversation-message__bubble {
+  max-width: 85%;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.conversation-message--user .conversation-message__bubble {
+  background-color: var(--color-accent-tint);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.conversation-message--assistant .conversation-message__bubble {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* ----------------------------------------------------------------
+   Typographic Hierarchy Inside Answers
+
+   Applies to prose rendered inside an assistant message
+   (.conversation-message__text). Kept restrained: the answer's
+   readability matters more here than anywhere else in the product.
+---------------------------------------------------------------- */
+
+.conversation-message__text {
+  color: var(--color-text-primary);
+}
+
+.conversation-message__text > * + * {
+  margin-top: var(--space-3);
+}
+
+.conversation-message__text h1,
+.conversation-message__text h2,
+.conversation-message__text h3 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.conversation-message__text ul,
+.conversation-message__text ol {
+  padding-left: var(--space-5);
+}
+
+.conversation-message__text ul {
+  list-style: disc;
+}
+
+.conversation-message__text ol {
+  list-style: decimal;
+}
+
+.conversation-message__text li + li {
+  margin-top: var(--space-1);
+}
+
+.conversation-message__text strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.conversation-message__text code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.9em;
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+}
+
+
+/* ----------------------------------------------------------------
+   Retrieved Context Disclosure
+---------------------------------------------------------------- */
+
+.context-disclosure {
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: var(--space-2);
+}
+
+.context-disclosure__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) 0;
+  transition: color var(--duration-fast) var(--easing-standard);
+}
+
+.context-disclosure__toggle:hover {
+  color: var(--color-accent);
+}
+
+.context-disclosure__icon {
+  transition: transform var(--duration-fast) var(--easing-standard);
+}
+
+.context-disclosure[open] .context-disclosure__icon {
+  transform: rotate(180deg);
+}
+
+.context-disclosure__panel {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.excerpt-card {
+  padding: var(--space-3);
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.excerpt-card__label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.excerpt-card__text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+}
+
+
+/* ----------------------------------------------------------------
+   Phase 2B — Responsive Adjustments
+---------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  #document-bar {
+    padding: var(--space-3) var(--gutter);
+  }
+
+  .document-bar__filename {
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  #document-bar,
+  #empty-chat-state {
+    padding-inline: var(--space-3);
+  }
+
+  .conversation-message__bubble {
+    max-width: 92%;
+  }
+
+  .document-bar__filename {
+    max-width: 100px;
+  }
+}
+
+
+/* ================================================================
+   PHASE 2C — Input Bar, Loading/Processing, Errors, Final Polish
+
+   Scope: sticky bottom input bar, auto-growing textarea, send
+   button, upload processing/loading state, disabled states,
+   thinking indicator, error components (inline + toast), and
+   remaining utility classes for JavaScript.
+
+   This completes Phase 2 (CSS). No further CSS phases are planned
+   before Phase 3 (JavaScript behavior).
+================================================================= */
+
+
+/* ----------------------------------------------------------------
+   Sticky Bottom Input Bar
+---------------------------------------------------------------- */
+
+#question-input-bar {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: var(--color-bg-surface);
+  border-top: 1px solid var(--color-border-subtle);
+  padding: var(--space-4) var(--gutter);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+}
+
+.question-form {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+
+/* ----------------------------------------------------------------
+   Auto-Growing Textarea
+---------------------------------------------------------------- */
+
+.question-input {
+  flex: 1 1 auto;
+  min-height: 44px;
+  max-height: 160px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  resize: none;
+  overflow-y: auto;
+  transition: border-color var(--duration-fast) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard),
+    height var(--duration-fast) var(--easing-standard);
+}
+
+/*
+  Auto-grow itself (recalculating scrollHeight and setting inline
+  height) is JavaScript's job in Phase 3 — this transition just
+  makes that height change feel smooth rather than instant.
+*/
+
+.question-input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.question-input:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+.question-input:focus-visible {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-surface);
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-accent-tint-border);
+}
+
+.question-input:disabled {
+  color: var(--color-text-placeholder);
+  cursor: not-allowed;
+}
+
+
+/* ----------------------------------------------------------------
+   Send Button
+---------------------------------------------------------------- */
+
+.send-button {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--easing-standard),
+    opacity var(--duration-fast) var(--easing-standard);
+}
+
+.send-button__icon {
+  width: 18px;
+  height: 18px;
+  /* Placeholder box until a real send-icon graphic (inline SVG or
+     background-image) is added in markup/JS; sized and positioned
+     correctly so swapping in the real icon later is a drop-in. */
+  background-color: var(--color-text-on-accent);
+  border-radius: var(--radius-sm);
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+.send-button:active:not(:disabled) {
+  background-color: var(--color-accent-active);
+}
+
+.send-button:disabled {
+  background-color: var(--color-border-strong);
+  cursor: not-allowed;
+}
+
+/*
+  Send button's own in-flight state (while waiting on /query) reuses
+  :disabled plus this modifier for the spinner swap-in; JS toggles
+  the class, this file only defines the look.
+*/
+.send-button--loading .send-button__icon {
+  opacity: 0;
+}
+
+.send-button--loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--color-text-on-accent);
+  border-radius: var(--radius-full);
+  animation: spin var(--duration-base) linear infinite;
+  animation-duration: 700ms;
+}
+
+
+/* ----------------------------------------------------------------
+   Upload Processing / Loading State
+
+   JS toggles `.upload-dropzone--uploading` and swaps the dropzone's
+   inner content for a progress card using this markup shape:
+
+    <div class="upload-progress">
+      <span class="upload-progress__filename">report.pdf</span>
+      <div class="upload-progress__track">
+        <div class="upload-progress__bar"></div>
+      </div>
+      <span class="upload-progress__label">Preparing your document…</span>
+    </div>
+---------------------------------------------------------------- */
+
+.upload-dropzone--drag-active {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-tint);
+}
+
+.upload-dropzone--uploading {
+  cursor: default;
+}
+
+.upload-progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.upload-progress__filename {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.upload-progress__track {
+  width: 100%;
+  max-width: 280px;
+  height: 6px;
+  background-color: var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.upload-progress__bar {
+  width: 40%;
+  height: 100%;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-full);
+  animation: indeterminate-progress 1.2s ease-in-out infinite;
+}
+
+.upload-progress__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+@keyframes indeterminate-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+
+/* ----------------------------------------------------------------
+   Thinking Indicator (assistant "answer in progress" placeholder)
+
+   Markup shape (rendered in place of an assistant message while
+   waiting on /query):
+
+    <div class="conversation-message conversation-message--assistant">
+      <div class="conversation-message__bubble thinking-indicator">
+        <span class="thinking-indicator__label">Thinking</span>
+        <span class="thinking-indicator__dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+    </div>
+---------------------------------------------------------------- */
+
+.thinking-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.thinking-indicator__dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.thinking-indicator__dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-placeholder);
+  animation: thinking-pulse 1.1s ease-in-out infinite;
+}
+
+.thinking-indicator__dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.thinking-indicator__dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes thinking-pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* ----------------------------------------------------------------
+   Error Components
+
+   Inline dropzone error, inline retry card (upload/processing
+   failure), an error-styled assistant message, and a top-right
+   toast for transient/network errors.
+---------------------------------------------------------------- */
+
+.upload-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+}
+
+.upload-error-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.upload-error-card__message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+}
+
+.upload-error-card__retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding-inline: var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-tint);
+  border: 1px solid var(--color-accent-tint-border);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+.upload-error-card__retry:hover {
+  background-color: var(--color-accent-tint-border);
+}
+
+.conversation-message--error .conversation-message__bubble {
+  background-color: var(--color-bg-page);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+.conversation-message__retry {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+}
+
+.conversation-message__retry:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.toast {
+  position: fixed;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 320px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: opacity var(--duration-base) var(--easing-standard),
+    transform var(--duration-base) var(--easing-standard);
+}
+
+.toast--error {
+  border-left: 3px solid var(--color-error);
+}
+
+.toast--success {
+  border-left: 3px solid var(--color-success);
+}
+
+.toast--exiting {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+
+/* ----------------------------------------------------------------
+   Empty / Loading Transitions
+
+   Applied to whichever element JS adds this class to right after
+   insertion (e.g. a newly appended message, or the document bar
+   swapping in for the first time). Kept subtle per "no unnecessary
+   animations" — a short fade, not a slide/bounce.
+---------------------------------------------------------------- */
+
+.is-entering {
+  animation: fade-in var(--duration-base) var(--easing-standard);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ----------------------------------------------------------------
+   Disabled States (general)
+---------------------------------------------------------------- */
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* ----------------------------------------------------------------
+   Remaining Utility Classes for JavaScript
+---------------------------------------------------------------- */
+
+/* Toggle target for the collapsed/expanded chevron already handled
+   via .context-disclosure[open] in Phase 2B — no extra class needed
+   there. These two are general-purpose for Phase 3's use: */
+
+.is-hidden {
+  display: none !important;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+
+/* ----------------------------------------------------------------
+   Phase 2C — Final Responsive Polish
+---------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  #question-input-bar {
+    padding: var(--space-3);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .question-input {
+    font-size: var(--font-size-base);
+  }
+
+  .toast {
+    left: var(--space-3);
+    right: var(--space-3);
+    max-width: none;
+  }
+}

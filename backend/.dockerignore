@@ -1,0 +1,39 @@
+# --- Secrets: never bake into the image ---
+.env
+.env.*
+!.env.example
+
+# --- Version control / editors ---
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# --- Python artifacts ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Tests / coverage (not needed at runtime) ---
+tests/
+.pytest_cache/
+pytest.ini
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Runtime-generated data (created fresh inside the container) ---
+uploads/
+data/
+
+# --- Docs / misc (not needed inside the image) ---
+README.md
+*.md
+.DS_Store
