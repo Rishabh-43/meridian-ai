@@ -2,6 +2,16 @@
 
 A FastAPI backend implementing a Retrieval-Augmented Generation (RAG) pipeline: upload a document, chunk and embed it, store it in a local vector database, then ask natural-language questions answered from that document's content using Groq-hosted LLMs.
 
+## Demo
+
+https://github.com/user-attachments/assets/YOUR_VIDEO_ID
+
+The video demonstrates the complete workflow:
+- Browse and select a PDF, DOCX, or TXT file.
+- Upload and process the document.
+- Ask questions about the uploaded document.
+- Receive context-aware answers generated using the RAG pipeline.
+
 ## Pipeline
 
 ```
