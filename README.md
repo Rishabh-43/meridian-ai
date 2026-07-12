@@ -4,7 +4,10 @@ A FastAPI backend implementing a Retrieval-Augmented Generation (RAG) pipeline: 
 
 ## Demo
 
-https://github.com/user-attachments/assets/
+
+https://github.com/user-attachments/assets/e856061d-a610-4bb2-9c1c-73aeba2eff33
+
+
 
 
 
