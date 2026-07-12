@@ -216,7 +216,15 @@ function showPostUploadUI() {
   if (appState.messages.length === 0) {
     dom.emptyChatState.hidden = false;
   }
+  
+  // BUG FIX: Explicitly enable chat input and focus it to ensure
+  // the UI state is properly reflected after upload succeeds.
+  // This forces the browser to remove the disabled attribute and
+  // repaint the DOM, making the input visibly enabled.
+  dom.questionInput.disabled = false;
+  dom.sendQuestionButton.disabled = false;
   setChatEnabled(true);
+  dom.questionInput.focus();
 }
 
 function setChatEnabled(enabled) {
