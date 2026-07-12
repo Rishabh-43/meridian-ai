@@ -4,7 +4,9 @@ A FastAPI backend implementing a Retrieval-Augmented Generation (RAG) pipeline: 
 
 ## Demo
 
-https://github.com/user-attachments/assets/YOUR_VIDEO_ID
+https://github.com/user-attachments/assets/
+
+
 
 The video demonstrates the complete workflow:
 - Browse and select a PDF, DOCX, or TXT file.
